@@ -23,15 +23,17 @@ const userSchema = new mongoose.Schema(
       index: { unique: true, sparse: true },
       required: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+      index: { unique: true, sparse: true },
+    },
     userPassword: {
       type: String,
       select: false,
       required: true,
     },
-    userAddress: {
-      type: String,
-    },
-    userDesc: String,
+    userBio: String,
     userImage: String,
     userPoints: {
       type: Number,

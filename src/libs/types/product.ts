@@ -6,6 +6,17 @@ import {
   ProductVolume,
 } from "../enums/product.enum";
 
+export interface RatingsSummary {
+  average: number;
+  count: number;
+  distribution: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+}
 export interface Product {
   _id: Types.ObjectId;
   productStatus: ProductStatus;
@@ -18,8 +29,7 @@ export interface Product {
   productDesc: string;
   productImages: string[];
   productViews: number;
-  productReviews: string[];
-  productRatings: number[];
+  ratingsSummary: RatingsSummary;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,8 +45,6 @@ export interface ProductInput {
   productDesc?: string;
   productImages?: string[];
   productViews?: number;
-  productReviews?: string[];
-  productRatings?: number[];
 }
 
 export interface ProductUpdateInput {
@@ -51,8 +59,6 @@ export interface ProductUpdateInput {
   productDesc?: string;
   productImages?: string[];
   productViews?: number;
-  productReviews?: string[];
-  productRatings?: number[];
 }
 
 export interface ProductInquiry {

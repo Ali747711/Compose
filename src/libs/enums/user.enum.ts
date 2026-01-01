@@ -5,6 +5,6 @@ export enum UserType {
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
-  BLCOK = "BLCOK",
+  BLOCK = "BLOCK",
   DELETE = "DELETE",
 }

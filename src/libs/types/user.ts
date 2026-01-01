@@ -11,8 +11,6 @@ export interface User {
   userPhone: string;
   userEmail?: string;
   userPassword?: string;
-  userAddress?: string[];
-  userPayments: string[];
   userBio?: string;
   userImage?: string;
   userPoints: number;
@@ -27,8 +25,9 @@ export interface UserInput {
   userPhone: string;
   userEmail?: string;
   userPassword: string;
-  userAddress?: string;
-  userDesc?: string;
+  userAddress?: string[];
+  userPayments?: string[];
+  userBio?: string;
   userImage?: string;
   userPoints?: number;
 }
@@ -41,8 +40,9 @@ export interface SessionUser {
   userPhone: string;
   userEmail?: string;
   userPassword?: string;
-  userAddress?: string;
-  userDesc?: string;
+  userAddress?: string[];
+  userPayments?: string[];
+  userBio?: string;
   userImage?: string;
   userPoints: number;
   createdAt: Date;
@@ -62,8 +62,9 @@ export interface UserUpdateInput {
   userPhone?: string;
   userEmail?: string;
   userPassword?: string;
-  userAddress?: string;
-  userDesc?: string;
+  userAddress?: string[];
+  userPayments?: string[];
+  userBio?: string;
   userImage?: string;
 }
 
