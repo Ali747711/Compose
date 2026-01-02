@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
+import { Types, ObjectId } from "mongoose";
 import { UserStatus, UserType } from "../enums/user.enum";
 import { Request } from "express";
 import { Session } from "express-session";
 
 export interface User {
-  _id: Types.ObjectId;
+  _id: ObjectId;
   userType: UserType;
   userStatus: UserStatus;
   userNick: string;
@@ -25,8 +25,6 @@ export interface UserInput {
   userPhone: string;
   userEmail?: string;
   userPassword: string;
-  userAddress?: string[];
-  userPayments?: string[];
   userBio?: string;
   userImage?: string;
   userPoints?: number;
@@ -40,8 +38,6 @@ export interface SessionUser {
   userPhone: string;
   userEmail?: string;
   userPassword?: string;
-  userAddress?: string[];
-  userPayments?: string[];
   userBio?: string;
   userImage?: string;
   userPoints: number;
@@ -62,8 +58,6 @@ export interface UserUpdateInput {
   userPhone?: string;
   userEmail?: string;
   userPassword?: string;
-  userAddress?: string[];
-  userPayments?: string[];
   userBio?: string;
   userImage?: string;
 }

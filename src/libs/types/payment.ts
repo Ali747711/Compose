@@ -15,7 +15,7 @@ export interface Payment {
 export interface PaymentInput {
   userId: Types.ObjectId;
   cardName?: string;
-  cardnumber?: string;
+  cardNumber?: string;
   expiryMonth?: number;
   expiryYear?: number;
   isDefault?: boolean;

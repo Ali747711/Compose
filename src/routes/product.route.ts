@@ -4,30 +4,17 @@ import {
   ProductCollection,
   ProductSize,
   ProductStatus,
+  ProductVolume,
 } from "../libs/enums/product.enum";
 import ProductModel from "../schemas/product.schema";
+import productController from "../controllers/product.controller";
+import userController from "../controllers/user.controller";
 
 const productRouter = Router();
-productRouter.get("/", async (req, res) => {
-  const input: ProductInput = {
-    productStatus: ProductStatus.PROCESS, // assuming ProductStatus enum
-    productCollection: ProductCollection.ADE, // assuming ProductCollection: "fruits" | "vegetables" | "juices" etc.
-    productName: "Fresh Egyptian Oranges",
-    productPrice: 25.99,
-    productLeftCount: 150,
-    productSize: ProductSize.LARGE, // assuming ProductSize: "small" | "medium" | "large"
-    productVolume: undefined, // optional
-    productDesc: "Sweet and juicy navel oranges, hand-picked daily.",
-    productImages: [
-      "https://example.com/images/products/orange1.jpg",
-      "https://example.com/images/products/orange2.jpg",
-    ],
-    productViews: 342,
-    productReviews: [],
-    productRatings: [],
-  };
-
-  const product = await ProductModel.create(input);
-  res.json({ product: product });
-});
+productRouter.get("/products", productController.getProducts);
+productRouter.get(
+  "/product/:id",
+  userController.verifyAuth,
+  productController.getProduct
+);
 export default productRouter;

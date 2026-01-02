@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema(
       default: ProductSize.NORMAL,
     },
     productVolume: {
-      type: Number,
+      type: String,
       enum: Object.values(ProductVolume),
       default: ProductVolume.ONE,
     },
@@ -52,7 +52,7 @@ const productSchema = new mongoose.Schema(
     ratingsSummary: {
       average: {
         type: Number,
-        default: 0,
+        default: 1,
         min: 1,
         max: 5,
       },

@@ -7,6 +7,7 @@ import userRouter from "./routes/user.route";
 import orderRouter from "./routes/order.route";
 import productRouter from "./routes/product.route";
 import viewRouter from "./routes/view.route";
+import addressRouter from "./routes/address.route";
 
 // PORT and APP declaration
 const app = express();
@@ -31,6 +32,7 @@ app.use("/user", userRouter);
 app.use("/order", orderRouter);
 app.use("/product", productRouter);
 app.use("/view", viewRouter);
+app.use("/address", addressRouter);
 app.use("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });

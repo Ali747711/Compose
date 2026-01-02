@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+dotenv.config();
 import app from "./app";
 import connectCloudinary from "./libs/utils/cloudinary";
-dotenv.config();
 
 mongoose
   .connect(process.env.DB_URI as string)

@@ -1,8 +1,8 @@
-import { Types } from "mongoose";
+import { Types, ObjectId } from "mongoose";
 
 export interface Address {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: ObjectId;
   label: string;
   city: string;
   street: string;
@@ -15,7 +15,7 @@ export interface Address {
 }
 
 export interface AddressInput {
-  userId: Types.ObjectId;
+  userId: ObjectId;
   label: string;
   street: string;
   city: string;
