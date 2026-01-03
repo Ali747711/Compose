@@ -8,9 +8,19 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
     cardName: String,
-    cardNumber: String,
+    cardNumber: {
+      type: String,
+      required: true,
+      index: { unique: true, sparse: true },
+    },
     expiryMonth: Number,
     expiryYear: Number,
+    cardCVC: {
+      type: String,
+      minlength: [1, "CVC must be 3-4 digits!"],
+      maxlength: [4, "CVC must be 3-4 digits!"],
+      default: 123,
+    },
     isDefault: {
       type: Boolean,
       default: false,

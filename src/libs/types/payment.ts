@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types, ObjectId } from "mongoose";
 
 export interface Payment {
   _id: Types.ObjectId;
@@ -7,25 +7,28 @@ export interface Payment {
   cardNumber: string;
   expiryMonth: number;
   expiryYear: number;
+  cardCVC: number;
   isDefault: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface PaymentInput {
-  userId: Types.ObjectId;
+  userId: ObjectId;
   cardName?: string;
   cardNumber?: string;
   expiryMonth?: number;
   expiryYear?: number;
+  cardCVC: number;
   isDefault?: boolean;
 }
 
 export interface PaymentUpdateInput {
-  userId: Types.ObjectId;
+  userId: ObjectId;
   cardName?: string;
   cardNumber?: string;
   expiryMonth?: number;
   expiryYear?: number;
+  cardCVC: number;
   isDefault?: boolean;
 }

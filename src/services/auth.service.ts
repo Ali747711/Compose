@@ -51,7 +51,7 @@ class AuthService {
 
   public checkAuth = async (token: string) => {
     const result = (await jwt.verify(token, this.secretToken)) as User;
-    console.log("Token service, [checkAuth] User: ", result);
+    // console.log("Token service, [checkAuth] User: ", result);
     return result;
   };
 }
