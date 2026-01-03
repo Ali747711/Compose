@@ -9,4 +9,16 @@ orderRouter.post(
   userController.verifyAuth,
   orderController.createOrder
 );
+orderRouter.get(
+  "/get-user-orders",
+  userController.verifyAuth,
+  orderController.getUserOrders
+);
+
+orderRouter.put(
+  "/update-order",
+  userController.verifyAuth,
+  orderController.updateOrder
+);
+
 export default orderRouter;

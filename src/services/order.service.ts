@@ -1,7 +1,12 @@
 import { ObjectId } from "mongoose";
 import { shapeIntoMongooseObjectId } from "../libs/configs";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { Order, OrderItemInput } from "../libs/types/order";
+import {
+  Order,
+  OrderInquiry,
+  OrderItemInput,
+  OrderUpdateInput,
+} from "../libs/types/order";
 import { User } from "../libs/types/user";
 import OrderModel from "../schemas/order.schema";
 import OrderItemModel from "../schemas/orderItem.schema";
@@ -55,6 +60,59 @@ class OrderService {
     console.log("Order service, [createOrder] promiseList: ", promiseList);
     const orderItems = await Promise.all(promiseList);
     console.log("Order service, [createOrder] orderItems: ", orderItems);
+  };
+
+  public getUserOrders = async (
+    user: User,
+    inquiry: OrderInquiry
+  ): Promise<Order[]> => {
+    const userId = shapeIntoMongooseObjectId(user._id);
+    const matches = { userId: userId, orderStatus: inquiry.orderStatus };
+    const result = await this.orderModel
+      .aggregate([
+        { $match: matches },
+        { $sort: { updatedAt: -1 } },
+        { $skip: (inquiry.page - 1) * inquiry.limit },
+        { $limit: inquiry.limit },
+        {
+          $lookup: {
+            from: "orderItems",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.productId",
+            foreignField: "_id",
+            as: "productData",
+          },
+        },
+      ])
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  };
+
+  public updateOrder = async (
+    user: User,
+    input: OrderUpdateInput
+  ): Promise<Order> => {
+    const userId = shapeIntoMongooseObjectId(user._id);
+    const orderId = shapeIntoMongooseObjectId(input.orderId);
+
+    const result = await this.orderModel
+      .findOneAndUpdate(
+        { _id: orderId, userId: userId },
+        { orderStatus: input.orderStatus },
+        { new: true }
+      )
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    return result;
   };
 }
 
