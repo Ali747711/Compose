@@ -11,6 +11,8 @@ import AuthService from "../services/auth.service";
 import { AUTH_TIMER } from "../libs/configs";
 import UserService from "../services/user.service";
 import { uploader } from "../libs/utils/uploadToCloudinary";
+import { logger } from "../libs/utils/logger";
+import rateLimit from "../libs/utils/upstash";
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -28,7 +30,7 @@ userController.signup = async (req: ExtendedRequest, res: Response) => {
       input.userImage = image?.secure_url;
     }
     const result = await userService.signup(input);
-    const token = await authService.token(result);
+    const token = await authService.createToken(result);
 
     // setting cookie
     res.cookie("accessToken", token, {
@@ -50,7 +52,7 @@ userController.login = async (req: Request, res: Response) => {
     const input: UserLoginInput = req.body;
 
     const result = await userService.login(input);
-    const token = await authService.token(result);
+    const token = await authService.createToken(result);
 
     // Cookie
     res.cookie("accessToken", token, {
@@ -150,6 +152,29 @@ userController.verifyAuth = async (
     }
   }
 };
+
+userController.rateLimiter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { success } = await rateLimit.limit("my-rate-limiter");
+    if (!success) {
+      return res
+        .status(429)
+        .json({
+          message: "Too Many Requests, Please wait and try again later!",
+        });
+    }
+    next();
+  } catch (error) {
+    logger.error("User controller", "rate limiter", error);
+    console.error("Rate limiting error:", error);
+    next(error);
+  }
+};
+
 userController.getUserDetails = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("User controller, [getUserDetails]--------");

@@ -16,7 +16,8 @@ class AuthService {
     console.log("Token service, [createToken] -----------");
     console.log("Token service, [createToken] ENV string: ", this.secretToken);
     console.log("Token service, [createToken] Incoming Payload: ", payload);
-    return new Promise((reject, resolve) => {
+    return new Promise((resolve, reject) => {
+      // i made mistake here, i used reject, resolve in wrong order
       const duration = `${AUTH_TIMER}h`;
       console.log("Token service, [createToken], Duration: ", duration);
       jwt.sign(
@@ -36,18 +37,18 @@ class AuthService {
     });
   };
 
-  public token = async (payload: User) => {
-    try {
-      const duration = `${AUTH_TIMER}h`;
-      const token = await jwt.sign(payload, this.secretToken, {
-        expiresIn: duration,
-      });
-      return token;
-    } catch (error) {
-      console.log("Auth service, [token] Error: ", error);
-      throw new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED);
-    }
-  };
+  // public token = async (payload: User) => {
+  //   try {
+  //     const duration = `${AUTH_TIMER}h`;
+  //     const token = await jwt.sign(payload, this.secretToken, {
+  //       expiresIn: duration,
+  //     });
+  //     return token;
+  //   } catch (error) {
+  //     console.log("Auth service, [token] Error: ", error);
+  //     throw new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED);
+  //   }
+  // };
 
   public checkAuth = async (token: string) => {
     const result = (await jwt.verify(token, this.secretToken)) as User;

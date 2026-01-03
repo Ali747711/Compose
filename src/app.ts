@@ -9,6 +9,7 @@ import productRouter from "./routes/product.route";
 import viewRouter from "./routes/view.route";
 import addressRouter from "./routes/address.route";
 import paymentRouter from "./routes/payment.route";
+import userController from "./controllers/user.controller";
 
 // PORT and APP declaration
 const app = express();
@@ -21,6 +22,9 @@ app.use(morgan(MORGAN_FOMRAT));
 // app.use(express.static(path.join(__dirname, "public")));
 app.use("/", express.static("public"));
 app.use(cookieParser());
+
+// Rate limiter settings
+app.use(userController.rateLimiter);
 
 // Session setting
 
