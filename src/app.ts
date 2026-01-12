@@ -16,7 +16,11 @@ import userController from "./controllers/user.controller";
 const app = express();
 
 // Allow multiple origins
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://compose-client.vercel.app/",
+];
 // Middlewares
 
 app.use(express.json());
