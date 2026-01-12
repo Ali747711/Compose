@@ -26,10 +26,23 @@ productController.getProducts = async (req: Request, res: Response) => {
     }
 
     const result = await productService.getProducts(inquiry);
-    console.log("Product controller, [getProducts] result: ", result);
+    // console.log("Product controller, [getProducts] result: ", result);
     res.status(HttpCode.OK).json(result);
   } catch (error) {
     console.log("Product controller, [getProducts] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+productController.getAllProducts = async (req: Request, res: Response) => {
+  try {
+    const result = await productService.getAllProducts();
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Product controller, [getAllProducts] Error: ", error);
     if (error instanceof Errors) {
       res.status(error.code).json(error);
     } else {
@@ -42,7 +55,8 @@ productController.getProduct = async (req: ExtendedRequest, res: Response) => {
     console.log("Product controller, [getProduct] ------");
     const userId = req.user._id;
     const { id } = req.params;
-
+    console.log("Product Service: userId", userId);
+    console.log("Product Service: incoming Id", id);
     const result = await productService.getProduct(userId, id);
     res.status(HttpCode.OK).json(result);
   } catch (error) {
@@ -53,6 +67,11 @@ productController.getProduct = async (req: ExtendedRequest, res: Response) => {
       res.status(Errors.standard.code).json(Errors.standard);
     }
   }
+};
+
+productController.create = async (req: Request, res: Response) => {
+  const result = await productService.create();
+  res.status(201).json(result);
 };
 
 export default productController;

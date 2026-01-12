@@ -13,13 +13,13 @@ class AuthService {
   }
 
   public createToken = async (payload: User) => {
-    console.log("Token service, [createToken] -----------");
-    console.log("Token service, [createToken] ENV string: ", this.secretToken);
-    console.log("Token service, [createToken] Incoming Payload: ", payload);
+    // console.log("Token service, [createToken] -----------");
+    // console.log("Token service, [createToken] ENV string: ", this.secretToken);
+    // console.log("Token service, [createToken] Incoming Payload: ", payload);
     return new Promise((resolve, reject) => {
       // i made mistake here, i used reject, resolve in wrong order
       const duration = `${AUTH_TIMER}h`;
-      console.log("Token service, [createToken], Duration: ", duration);
+      // console.log("Token service, [createToken], Duration: ", duration);
       jwt.sign(
         payload,
         this.secretToken,

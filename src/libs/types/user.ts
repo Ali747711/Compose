@@ -2,6 +2,9 @@ import { Types, ObjectId } from "mongoose";
 import { UserStatus, UserType } from "../enums/user.enum";
 import { Request } from "express";
 import { Session } from "express-session";
+import { Address } from "./address";
+import { Payment } from "./payment";
+import { Order } from "./order";
 
 export interface User {
   _id: ObjectId;
@@ -14,6 +17,10 @@ export interface User {
   userBio?: string;
   userImage?: string;
   userPoints: number;
+  // from aggregate
+  userAddresses?: Address[];
+  userPayments?: Payment[];
+  userOrders?: Order[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,7 +58,7 @@ export interface UserLoginInput {
 }
 
 export interface UserUpdateInput {
-  _id: Types.ObjectId;
+  _id?: Types.ObjectId;
   userType?: UserType;
   userStatus?: UserStatus;
   userNick?: string;

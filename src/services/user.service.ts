@@ -77,7 +77,6 @@ class UserService {
         { userNick: 1, userPassword: 1, userStatus: 1 }
       )
       .exec();
-    console.log("User controller, [login] User: ", user?.toJSON());
     if (!user) {
       throw new Errors(HttpCode.NOT_FOUND, Message.NO_MEMBER_NICK);
       console.log("Error 1");
@@ -98,15 +97,39 @@ class UserService {
 
   public getUserDetails = async (user: User): Promise<User> => {
     const userId = shapeIntoMongooseObjectId(user._id);
+    const match = { _id: userId, userStatus: UserStatus.ACTIVE };
     const result = await this.userModel
-      .findOne({
-        _id: userId,
-        userStatus: user.userStatus,
-      })
+      .aggregate([
+        { $match: match },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "_id",
+            foreignField: "userId",
+            as: "userAddresses",
+          },
+        },
+        {
+          $lookup: {
+            from: "payments",
+            localField: "_id",
+            foreignField: "userId",
+            as: "userPayments",
+          },
+        },
+        {
+          $lookup: {
+            from: "orders",
+            localField: "_id",
+            foreignField: "userId",
+            as: "userOrders",
+          },
+        },
+      ])
       .exec();
 
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
-    return result;
+    return result[0];
   };
 
   public updateUser = async (

@@ -2,6 +2,7 @@ import express, { urlencoded } from "express";
 import morgan, { format } from "morgan";
 import path from "path";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { MORGAN_FOMRAT } from "./libs/configs";
 import userRouter from "./routes/user.route";
 import orderRouter from "./routes/order.route";
@@ -14,9 +15,34 @@ import userController from "./controllers/user.controller";
 // PORT and APP declaration
 const app = express();
 
+// Allow multiple origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://green-store-j5kv.vercel.app",
+  "https://green-store-j5kv-git-main-alis-projects-1ef90113.vercel.app",
+  "https://green-store-j5kv-l1pacpdcz-alis-projects-1ef90113.vercel.app",
+];
 // Middlewares
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, Postman, or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true, // Allow cookies and credentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(urlencoded({ extended: true }));
 app.use(morgan(MORGAN_FOMRAT));
 // app.use(express.static(path.join(__dirname, "public")));

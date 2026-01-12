@@ -1,9 +1,13 @@
 import { Response, Request } from "express";
 import { P } from "../libs/types/common";
-import { ExtendedRequest } from "../libs/types/user";
+import { ExtendedRequest, User } from "../libs/types/user";
 import AddressService from "../services/address.service";
 import Errors, { HttpCode } from "../libs/Errors";
-import { AddressInput, AddressUpdateInput } from "../libs/types/address";
+import {
+  Address,
+  AddressInput,
+  AddressUpdateInput,
+} from "../libs/types/address";
 
 const addressService = new AddressService();
 const addressController: P = {};
@@ -58,6 +62,47 @@ addressController.updateAddress = async (req: Request, res: Response) => {
     res.status(HttpCode.OK).json(result);
   } catch (error) {
     console.log("Address controller, [updateAddress] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
+addressController.updateDefault = async (
+  req: ExtendedRequest,
+  res: Response
+) => {
+  try {
+    console.log("Address controller, [updateDefault] ------");
+    const user = req.user;
+    const { id } = req.params;
+    console.log(req.params);
+    const result: Address[] = await addressService.updateDefault(user, id);
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Address controller, [updateDefault] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
+addressController.updateMany = async (req: ExtendedRequest, res: Response) => {
+  try {
+    console.log("Address controller, [updateMany] ------");
+    const user: User = req.user;
+    const input = req.body;
+
+    // console.log("Incoming data for Default true: ", req.body);
+    const result = await addressService.updateMany(user, input);
+    // console.log("Update Many result: ", result);
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Address controller, [updateMany] Error: ", error);
     if (error instanceof Errors) {
       res.status(error.code).json(error);
     } else {

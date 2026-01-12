@@ -14,11 +14,7 @@ userRouter.post(
   upload.single("userImage"),
   userController.updateUser
 );
-userRouter.get(
-  "/top-users",
-  userController.verifyAuth,
-  userController.getTopUsers
-);
+userRouter.get("/top-users", userController.getTopUsers);
 userRouter.get(
   "/user-details",
   userController.verifyAuth,

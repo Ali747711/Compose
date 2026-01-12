@@ -9,6 +9,7 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
 import ViewService from "./view.service";
+import { additionalProductsData, frappeData, productsData } from "../libs/data";
 
 class ProductService {
   private readonly productModel;
@@ -43,6 +44,14 @@ class ProductService {
     return result;
   };
 
+  public getAllProducts = async (): Promise<Product[]> => {
+    console.log("Product service, [getAllProducts] ----------");
+    const result = await this.productModel.find({});
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  };
+
   public getProduct = async (
     userId: ObjectId | null,
     id: string
@@ -64,9 +73,10 @@ class ProductService {
       };
 
       const isExist = await this.viewService.checkViewExist(input);
+      console.log("ISEXIST: ", isExist);
       if (!isExist) {
-        await this.viewService.insertViewExist(input);
-
+        const view = await this.viewService.insertViewExist(input);
+        console.log("View: ", view);
         // increment product view
         result = await this.productModel
           .findByIdAndUpdate(
@@ -77,6 +87,11 @@ class ProductService {
           .exec();
       }
     }
+    return result;
+  };
+
+  public create = async (): Promise<Product[]> => {
+    const result = await this.productModel.insertMany(frappeData);
     return result;
   };
 }

@@ -49,6 +49,7 @@ userController.signup = async (req: ExtendedRequest, res: Response) => {
 };
 userController.login = async (req: Request, res: Response) => {
   try {
+    logger.info("User controller", "login", "user is logging in!");
     const input: UserLoginInput = req.body;
 
     const result = await userService.login(input);
@@ -93,13 +94,15 @@ userController.updateUser = async (req: ExtendedRequest, res: Response) => {
     console.log("User controller, [updateUser]--------");
     const user = req.user;
     const input: UserUpdateInput = req.body;
-    if (!req.file)
-      input.userImage =
-        "https://res.cloudinary.com/dmenptrzv/image/upload/v1767322700/users/akw9yyu4atuaunmchip8.png";
-    else {
-      const image: any = await uploader(req.file, "users");
-      input.userImage = image?.secure_url;
-    }
+    // if (!req.file)
+    //   input.userImage =
+    //     "https://res.cloudinary.com/dmenptrzv/image/upload/v1767322700/users/akw9yyu4atuaunmchip8.png";
+    // else {
+    //   const image: any = await uploader(req.file, "users");
+    //   input.userImage = image?.secure_url;
+    // }
+    const image: any = await uploader(req.file, "users");
+    input.userImage = image?.secure_url;
 
     const result = await userService.updateUser(user, input);
     res.status(HttpCode.OK).json({ success: true, user: result });
@@ -161,11 +164,9 @@ userController.rateLimiter = async (
   try {
     const { success } = await rateLimit.limit("my-rate-limiter");
     if (!success) {
-      return res
-        .status(429)
-        .json({
-          message: "Too Many Requests, Please wait and try again later!",
-        });
+      return res.status(429).json({
+        message: "Too Many Requests, Please wait and try again later!",
+      });
     }
     next();
   } catch (error) {
@@ -179,7 +180,7 @@ userController.getUserDetails = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("User controller, [getUserDetails]--------");
     const result = await userService.getUserDetails(req.user);
-    res.status(HttpCode.OK).json({ user: result });
+    res.status(HttpCode.OK).json(result);
   } catch (error) {
     console.log("User controller, [getUserDetails] Error: ", error);
     if (error instanceof Errors) {

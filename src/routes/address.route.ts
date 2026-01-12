@@ -21,6 +21,17 @@ addressRouter.put(
   addressController.updateAddress
 );
 
+addressRouter.put(
+  "/update-many",
+  userController.verifyAuth,
+  addressController.updateMany
+);
+addressRouter.put(
+  "/update-default/:id",
+  userController.verifyAuth,
+  addressController.updateDefault
+);
+
 addressRouter.delete(
   "/delete-address/:id",
   userController.verifyAuth,

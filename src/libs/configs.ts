@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const AUTH_TIMER = 24; //hours
+export const AUTH_TIMER = 100; //hours
 
 export const MORGAN_FOMRAT =
   "Method: :method |URL: :url | :response-time |S-code: [:status] | HTTP/:http-version |req-header: :req[header]\n";
