@@ -35,6 +35,8 @@ userController.signup = async (req: ExtendedRequest, res: Response) => {
     // setting cookie
     res.cookie("accessToken", token, {
       maxAge: AUTH_TIMER * 3600 * 1000,
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
     res.status(HttpCode.OK).json({ user: result, accessToken: token });
@@ -58,6 +60,8 @@ userController.login = async (req: Request, res: Response) => {
     // Cookie
     res.cookie("accessToken", token, {
       maxAge: AUTH_TIMER * 3600 * 1000,
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
 
@@ -75,7 +79,11 @@ userController.login = async (req: Request, res: Response) => {
 userController.logout = async (req: Request, res: Response) => {
   try {
     console.log("User controller, [logout]--------");
-    res.cookie("accessToken", null, { maxAge: 0, httpOnly: true });
+    res.cookie("accessToken", null, {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "none",
+    });
     res
       .status(HttpCode.OK)
       .json({ success: true, message: "Logged out successfully" });
@@ -92,6 +100,7 @@ userController.logout = async (req: Request, res: Response) => {
 userController.updateUser = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("User controller, [updateUser]--------");
+    console.log("File: ", req.file);
     const user = req.user;
     const input: UserUpdateInput = req.body;
     // if (!req.file)

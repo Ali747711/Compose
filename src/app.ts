@@ -16,29 +16,40 @@ import userController from "./controllers/user.controller";
 const app = express();
 
 // Allow multiple origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://green-store-j5kv.vercel.app",
-  "https://green-store-j5kv-git-main-alis-projects-1ef90113.vercel.app",
-  "https://green-store-j5kv-l1pacpdcz-alis-projects-1ef90113.vercel.app",
-];
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 // Middlewares
 
 app.use(express.json());
+// 🔍 CORS with detailed logging
 app.use(
   cors({
     origin: function (origin, callback) {
+      // ✅ Log every request for debugging
+      console.log("=================================");
+      console.log("📨 Incoming request from origin:", origin || "NO ORIGIN");
+      console.log("✅ Allowed origins:", allowedOrigins);
+
       // Allow requests with no origin (like mobile apps, Postman, or curl)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        console.log("✅ ALLOWED: No origin (Postman/curl/mobile)");
+        return callback(null, true);
+      }
 
       if (allowedOrigins.indexOf(origin) === -1) {
+        console.log("❌ BLOCKED: Origin not in allowed list");
+        console.log("❌ Blocked origin:", origin);
+        console.log("❌ Did you mean one of these?");
+        allowedOrigins.forEach((allowed) => {
+          console.log(`   - ${allowed}`);
+        });
         const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
         return callback(new Error(msg), false);
       }
+
+      console.log("✅ ALLOWED: Origin matches");
       return callback(null, true);
     },
-    credentials: true, // Allow cookies and credentials
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

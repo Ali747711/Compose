@@ -1,23 +1,36 @@
 {
   "name": "composereal",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.ts",
+  "description": "Compose Coffee Backend API",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/server.ts",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc"
+    "build": "npm run clean && tsc && npm run copy-files",
+    "start": "node dist/server.js",
+    "clean": "rm -rf dist",
+    "copy-files": "cp -r src/views dist/ && cp -r public dist/",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "coffee",
+    "ecommerce",
+    "api"
+  ],
+  "author": "Ali Nabi",
   "license": "ISC",
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+  },
   "type": "commonjs",
   "dependencies": {
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.36.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.8.0",
+    "compression": "^1.8.1",
     "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -25,14 +38,17 @@
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "stream": "^0.0.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
     "@types/connect-mongodb-session": "^2.4.8",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
