@@ -9,7 +9,7 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
 import ViewService from "./view.service";
-import { additionalProductsData, frappeData, productsData } from "../libs/data";
+import { additionalProductsData, productsData } from "../libs/data";
 
 class ProductService {
   private readonly productModel;
@@ -91,7 +91,7 @@ class ProductService {
   };
 
   public create = async (): Promise<Product[]> => {
-    const result = await this.productModel.insertMany(frappeData);
+    const result = await this.productModel.insertMany(productsData);
     return result;
   };
 }
