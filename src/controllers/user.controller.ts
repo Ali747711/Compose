@@ -155,13 +155,13 @@ userController.verifyAuth = async (
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.substring(7);
-      console.log("Token from Auth header: ", token);
+      // console.log("Token from Auth header: ", token);
     }
 
     //const token = req.cookies["accessToken"];
     if (!token && req.cookies.accessToken) {
       token = req.cookies.accessToken;
-      console.log("COOKIE: ", req.cookies);
+      // console.log("COOKIE: ", req.cookies);
     }
     if (token) req.user = await authService.checkAuth(token);
     if (!req.user)
