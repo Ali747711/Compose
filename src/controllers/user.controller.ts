@@ -39,7 +39,7 @@ userController.signup = async (req: ExtendedRequest, res: Response) => {
       sameSite: "none",
       httpOnly: true,
     });
-    res.status(HttpCode.OK).json({ user: result, accessToken: token });
+    res.status(HttpCode.OK).json({ user: result, token });
   } catch (error) {
     console.log("User controller, [signup] Error: ", error);
     if (error instanceof Errors) {
@@ -65,7 +65,7 @@ userController.login = async (req: Request, res: Response) => {
       httpOnly: true,
     });
 
-    res.status(HttpCode.OK).json({ user: result, accessToken: token });
+    res.status(HttpCode.OK).json({ user: result, token });
   } catch (error) {
     console.log("User controller, [login] Error: ", error);
     if (error instanceof Errors) {
@@ -80,7 +80,7 @@ userController.logout = async (req: Request, res: Response) => {
   try {
     console.log("User controller, [logout]--------");
     res.cookie("accessToken", null, {
-      maxAge: 0,
+      secure: true,
       httpOnly: true,
       sameSite: "none",
     });
@@ -150,7 +150,7 @@ userController.verifyAuth = async (
   try {
     console.log("User controller, [verifyAuth]--------");
 
-    let token: string;
+    let token;
 
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
