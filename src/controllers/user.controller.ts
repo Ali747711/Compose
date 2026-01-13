@@ -155,7 +155,11 @@ userController.verifyAuth = async (
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.substring(7);
-      // console.log("Token from Auth header: ", token);
+
+      // ✅ Prevent "null" or "undefined" strings
+      if (token === "null" || token === "undefined" || !token) {
+        token = null;
+      }
     }
 
     //const token = req.cookies["accessToken"];
