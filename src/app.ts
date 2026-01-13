@@ -11,6 +11,7 @@ import viewRouter from "./routes/view.route";
 import addressRouter from "./routes/address.route";
 import paymentRouter from "./routes/payment.route";
 import userController from "./controllers/user.controller";
+import healthRouter from "./routes/health.route";
 
 // PORT and APP declaration
 const app = express();
@@ -20,6 +21,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://compose-client.vercel.app",
+  "https://compose-client-alis-projects-1ef90113.vercel.app",
 ];
 // Middlewares
 
@@ -55,7 +57,8 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["Set-Cookie"], // ✅ Allow frontend to see Set-Cookie header
   })
 );
 app.use(urlencoded({ extended: true }));
@@ -80,6 +83,7 @@ app.use("/product", productRouter);
 app.use("/view", viewRouter);
 app.use("/address", addressRouter);
 app.use("/payment", paymentRouter);
+app.use("/health", healthRouter);
 app.use("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });
