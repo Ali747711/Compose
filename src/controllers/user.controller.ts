@@ -100,7 +100,7 @@ userController.logout = async (req: Request, res: Response) => {
 userController.updateUser = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("User controller, [updateUser]--------");
-    console.log("File: ", req.file);
+    // console.log("File: ", req.file);
     const user = req.user;
     const input: UserUpdateInput = req.body;
     // if (!req.file)
@@ -110,8 +110,13 @@ userController.updateUser = async (req: ExtendedRequest, res: Response) => {
     //   const image: any = await uploader(req.file, "users");
     //   input.userImage = image?.secure_url;
     // }
-    const image: any = await uploader(req.file, "users");
-    input.userImage = image?.secure_url;
+    console.log("File: ", req.file);
+    console.log("Files: ", req.files);
+    // console.log("Req: ", req);
+    if (req.file || req.files) {
+      const image: any = await uploader(req.file, "users");
+      input.userImage = image?.secure_url;
+    }
 
     const result = await userService.updateUser(user, input);
     res.status(HttpCode.OK).json({ success: true, user: result });
