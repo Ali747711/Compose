@@ -45,20 +45,20 @@ class UserService {
     } catch (error) {
       // ✅ LOG THE ACTUAL ERROR
       console.error("User service, [signup] Database Error:", error);
-      //   console.error("Error code:", error.code);
-      //   console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
 
-      //   // ✅ Handle duplicate key (E11000)
-      //   if (error.code === 11000) {
-      //     console.error("Duplicate field:", error.keyPattern);
-      //     throw new Errors(HttpCode.BAD_REQUEST, Message.USED_NICK_PHONE);
-      //   }
+      // ✅ Handle duplicate key (E11000)
+      if (error.code === 11000) {
+        console.error("Duplicate field:", error.keyPattern);
+        throw new Errors(HttpCode.BAD_REQUEST, Message.USED_NICK_PHONE);
+      }
 
-      //   // ✅ Handle validation errors
-      //   if (error.name === "ValidationError") {
-      //     console.error("Validation errors:", error.errors);
-      //     throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
-      //   }
+      // ✅ Handle validation errors
+      if (error.name === "ValidationError") {
+        console.error("Validation errors:", error.errors);
+        throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
+      }
 
       throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
     }
@@ -66,7 +66,6 @@ class UserService {
 
   public login = async (input: UserLoginInput): Promise<User> => {
     console.log("User service, [login] -----");
-    // console.log("User service, [login] Incoming data: ", input);
 
     const user = await this.userModel
       .findOne(
@@ -79,17 +78,14 @@ class UserService {
       .exec();
     if (!user) {
       throw new Errors(HttpCode.NOT_FOUND, Message.NO_MEMBER_NICK);
-      console.log("Error 1");
     } else if (user.userStatus === UserStatus.BLOCK) {
       throw new Errors(HttpCode.FORBIDDEN, Message.BLOCKED_USER);
-      console.log("Error 2");
     }
     // Comparing passwords
     const isMatch = await bcrypt.compare(input.userPassword, user.userPassword);
 
     if (!isMatch) {
       throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_PASSWORD);
-      console.log("Error 3");
     }
     const result = await this.userModel.findById(user._id).exec();
     return result?.toJSON() as User;

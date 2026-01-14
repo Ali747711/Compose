@@ -20,7 +20,6 @@ class ProductService {
   }
 
   public getProducts = async (inquiry: ProductInquiry): Promise<Product[]> => {
-    console.log("Product service, [getProducts] incoming inquiry: ", inquiry);
     const match: P = { productStatus: ProductStatus.PROCESS };
     if (inquiry.productCollection) {
       match.productCollection = inquiry.productCollection;
@@ -73,10 +72,9 @@ class ProductService {
       };
 
       const isExist = await this.viewService.checkViewExist(input);
-      console.log("ISEXIST: ", isExist);
+      // console.log("ISEXIST: ", isExist);
       if (!isExist) {
         const view = await this.viewService.insertViewExist(input);
-        console.log("View: ", view);
         // increment product view
         result = await this.productModel
           .findByIdAndUpdate(

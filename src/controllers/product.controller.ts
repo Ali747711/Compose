@@ -55,8 +55,6 @@ productController.getProduct = async (req: ExtendedRequest, res: Response) => {
     console.log("Product controller, [getProduct] ------");
     const userId = req.user._id;
     const { id } = req.params;
-    console.log("Product Service: userId", userId);
-    console.log("Product Service: incoming Id", id);
     const result = await productService.getProduct(userId, id);
     res.status(HttpCode.OK).json(result);
   } catch (error) {

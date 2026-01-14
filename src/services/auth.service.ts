@@ -19,7 +19,6 @@ class AuthService {
     return new Promise((resolve, reject) => {
       // i made mistake here, i used reject, resolve in wrong order
       const duration = `${AUTH_TIMER}h`;
-      // console.log("Token service, [createToken], Duration: ", duration);
       jwt.sign(
         payload,
         this.secretToken,
