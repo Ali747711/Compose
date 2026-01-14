@@ -21,6 +21,7 @@ const userController: P = {};
 userController.signup = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("User controller, [signup] -----------");
+    console.log("Req body: ", req.body);
     const input: UserInput = req.body;
     if (!req.file)
       input.userImage =

@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
 import Errors, { HttpCode } from "../libs/Errors";
 import { P } from "../libs/types/common";
-import { ExtendedRequest } from "../libs/types/user";
+import { ExtendedRequest, User } from "../libs/types/user";
 import PaymentService from "../services/payment.service";
 import { shapeIntoMongooseObjectId } from "../libs/configs";
-import { PaymentInput, PaymentUpdateInput } from "../libs/types/payment";
+import {
+  Payment,
+  PaymentInput,
+  PaymentUpdateInput,
+} from "../libs/types/payment";
 
 const paymentService = new PaymentService();
 const paymentController: P = {};
@@ -37,6 +41,41 @@ paymentController.editPayment = async (req: Request, res: Response) => {
     res.status(HttpCode.OK).json(result);
   } catch (error) {
     console.log("Payment controller, [editPayment] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
+paymentController.updateDefault = async (
+  req: ExtendedRequest,
+  res: Response
+) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await paymentService.updateDefault(id, user);
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Payment controller, [updateDefault] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
+paymentController.updateMany = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const user: User = req.user;
+    const input: Payment = req.body;
+    const result = await paymentService.updateMany(user, input);
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Payment controller, [updateMany payments] Error: ", error);
     if (error instanceof Errors) {
       res.status(error.code).json(error);
     } else {

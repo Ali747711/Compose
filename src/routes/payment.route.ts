@@ -19,6 +19,18 @@ paymentRouter.put(
   userController.verifyAuth,
   paymentController.editPayment
 );
+
+paymentRouter.put(
+  "/update-default/:id",
+  userController.verifyAuth,
+  paymentController.updateDefault
+);
+
+paymentRouter.put(
+  "/update-many",
+  userController.verifyAuth,
+  paymentController.updateMany
+);
 paymentRouter.delete(
   "/delete-payment/:id",
   userController.verifyAuth,
