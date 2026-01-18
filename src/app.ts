@@ -20,6 +20,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:5175",
   "https://compose-client.vercel.app",
   "https://compose-client-alis-projects-1ef90113.vercel.app",
 ];

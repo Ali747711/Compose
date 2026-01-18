@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { PaymentType } from "../libs/enums/payment.enum";
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
     cardName: String,
+
     cardNumber: {
       type: String,
       required: true,

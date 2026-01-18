@@ -138,7 +138,11 @@ export const productsData: ProductInput[] = [
     productLeftCount: 100,
     productSize: ProductSize.NORMAL,
     productDesc: "Rich dark chocolate smoothie",
-    productImages: [],
+    productImages: [
+      "https://res.cloudinary.com/dmenptrzv/image/upload/v1767611707/1515x2083.crop_71_g6itzi.jpg",
+      "https://res.cloudinary.com/dmenptrzv/image/upload/v1767611688/1515x2083.crop_61_s2abmv.jpg",
+      "https://res.cloudinary.com/dmenptrzv/image/upload/v1767611707/1515x2083.crop_71_g6itzi.jpg",
+    ],
     productViews: 0,
     productStatus: ProductStatus.PROCESS,
   },

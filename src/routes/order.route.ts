@@ -10,6 +10,11 @@ orderRouter.post(
   orderController.createOrder
 );
 orderRouter.get(
+  "/get-order/:id",
+  userController.verifyAuth,
+  orderController.getOrder
+);
+orderRouter.get(
   "/get-user-orders",
   userController.verifyAuth,
   orderController.getUserOrders

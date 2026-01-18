@@ -7,10 +7,6 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    // orderDelivery: {
-    //   type: Number,
-    //   required: true,
-    // },
     orderStatus: {
       type: String,
       enum: OrderStatus,
@@ -19,6 +15,19 @@ const orderSchema = new mongoose.Schema(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    deliveryDate: String,
+    deliveryFee: Number,
+    tip: Number,
+    orderAddress: {
+      type: Schema.Types.ObjectId,
+      ref: "Address",
+      required: true,
+    },
+    orderPayment: {
+      type: Schema.Types.ObjectId,
+      ref: "Payment",
       required: true,
     },
   },

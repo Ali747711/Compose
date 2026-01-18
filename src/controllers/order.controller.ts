@@ -27,6 +27,24 @@ orderController.createOrder = async (req: ExtendedRequest, res: Response) => {
   }
 };
 
+orderController.getOrder = async (req: ExtendedRequest, res: Response) => {
+  try {
+    console.log("Order controller, [getOrder] ------");
+    const { id } = req.params;
+    const user = req.user;
+
+    const result = await orderService.getOrder(id, user);
+    res.status(HttpCode.OK).json(result);
+  } catch (error) {
+    console.log("Order controller, [getOrder] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
 orderController.getUserOrders = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("Order controller, [getUserOrders] ---------");

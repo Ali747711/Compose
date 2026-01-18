@@ -1,4 +1,5 @@
 import { Types, ObjectId } from "mongoose";
+import { PaymentType } from "../enums/payment.enum";
 
 export interface Payment {
   _id: Types.ObjectId;
