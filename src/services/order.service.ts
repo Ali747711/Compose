@@ -32,7 +32,7 @@ class OrderService {
       (accumlator: number, item: OrderItemInput) => {
         return accumlator + item.itemPrice * item.itemQuantity;
       },
-      0
+      0,
     );
 
     try {
@@ -56,7 +56,7 @@ class OrderService {
 
   public recordOrderItem = async (
     orderId: ObjectId,
-    input: OrderItemInput[]
+    input: OrderItemInput[],
   ): Promise<void> => {
     const promiseList = input.map(async (item: OrderItemInput) => {
       item.orderId = shapeIntoMongooseObjectId(orderId);
@@ -117,7 +117,7 @@ class OrderService {
 
   public getUserOrders = async (
     user: User,
-    inquiry: OrderInquiry
+    inquiry: OrderInquiry,
   ): Promise<Order[]> => {
     const userId = shapeIntoMongooseObjectId(user._id);
     const matches = { userId: userId, orderStatus: inquiry.orderStatus };
@@ -125,8 +125,6 @@ class OrderService {
       .aggregate([
         { $match: matches },
         { $sort: { updatedAt: -1 } },
-        { $skip: (inquiry.page - 1) * inquiry.limit },
-        { $limit: inquiry.limit },
         {
           $lookup: {
             from: "orderItems",
@@ -152,7 +150,7 @@ class OrderService {
 
   public updateOrder = async (
     user: User,
-    input: OrderUpdateInput
+    input: OrderUpdateInput,
   ): Promise<Order> => {
     const userId = shapeIntoMongooseObjectId(user._id);
     const orderId = shapeIntoMongooseObjectId(input.orderId);
@@ -161,7 +159,7 @@ class OrderService {
       .findOneAndUpdate(
         { _id: orderId, userId: userId },
         { orderStatus: input.orderStatus },
-        { new: true }
+        { new: true },
       )
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
