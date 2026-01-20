@@ -1,4 +1,6 @@
 /* Compose Coffee Admin Panel Styles */
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@100..900&family=Quicksand:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@100..900&display=swap");
 
 :root {
   --sidebar-width: 260px;
@@ -17,7 +19,7 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: "Quicksand";
   background-color: var(--content-bg);
   color: #334155;
 }
