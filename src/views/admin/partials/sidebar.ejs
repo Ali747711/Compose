@@ -1,0 +1,39 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h2><i class="bi bi-cup-hot-fill"></i> Compose</h2>
+    <span>Admin Panel</span>
+  </div>
+  <ul class="sidebar-nav">
+    <li class="<%= activePage === 'dashboard' ? 'active' : '' %>">
+      <a href="/admin/dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li class="<%= activePage === 'products' ? 'active' : '' %>">
+      <a href="/admin/products">
+        <i class="bi bi-cup-straw"></i>
+        <span>Products</span>
+      </a>
+    </li>
+    <li class="<%= activePage === 'orders' ? 'active' : '' %>">
+      <a href="/admin/orders">
+        <i class="bi bi-cart3"></i>
+        <span>Orders</span>
+      </a>
+    </li>
+    <li class="<%= activePage === 'users' ? 'active' : '' %>">
+      <a href="/admin/users">
+        <i class="bi bi-people"></i>
+        <span>Users</span>
+      </a>
+    </li>
+  </ul>
+  <div class="sidebar-footer">
+    <a href="/admin/logout" class="logout-link">
+      <i class="bi bi-box-arrow-left"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

@@ -3,6 +3,8 @@ import morgan, { format } from "morgan";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import session from "express-session";
+import MongoDBStore from "connect-mongodb-session";
 import { MORGAN_FOMRAT } from "./libs/configs";
 import userRouter from "./routes/user.route";
 import orderRouter from "./routes/order.route";
@@ -12,12 +14,14 @@ import addressRouter from "./routes/address.route";
 import paymentRouter from "./routes/payment.route";
 import userController from "./controllers/user.controller";
 import healthRouter from "./routes/health.route";
+import adminRouter from "./routes/admin.route";
 
 // PORT and APP declaration
 const app = express();
 
 // Allow multiple origins
 const allowedOrigins = [
+  "http://localhost:3003",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
@@ -60,7 +64,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
     exposedHeaders: ["Set-Cookie"], // ✅ Allow frontend to see Set-Cookie header
-  })
+  }),
 );
 app.use(urlencoded({ extended: true }));
 app.use(morgan(MORGAN_FOMRAT));
@@ -71,10 +75,34 @@ app.use(cookieParser());
 // Rate limiter settings
 app.use(userController.rateLimiter);
 
-// Session setting
+// Session configuration for admin panel
+const MongoDBSessionStore = MongoDBStore(session);
+const sessionStore = new MongoDBSessionStore({
+  uri: process.env.DB_URI as string,
+  collection: "sessions",
+});
+
+sessionStore.on("error", (error) => {
+  console.log("Session store error:", error);
+});
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
+  }),
+);
 
 // EJS setting
-app.set("view engine", "EJS");
+app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Routes
@@ -85,6 +113,10 @@ app.use("/view", viewRouter);
 app.use("/address", addressRouter);
 app.use("/payment", paymentRouter);
 app.use("/health", healthRouter);
+
+// Admin panel routes (SSR)
+app.use("/admin", adminRouter);
+
 app.use("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });

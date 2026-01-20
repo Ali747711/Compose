@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Compose Coffee Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+  <div class="wrapper">
+    <%- include('../partials/sidebar', { activePage }) %>
+    <div class="main-content">
+      <%- include('../partials/header', { user, title }) %>
+      <main class="content">
+        <% if (success) { %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Order status updated successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+        <% if (error) { %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <form method="GET" class="row g-3">
+              <div class="col-md-4">
+                <select name="status" class="form-select">
+                  <option value="">All Status</option>
+                  <% statuses.filter(s => s !== 'DELETE').forEach(s => { %>
+                    <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= s %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="bi bi-search"></i> Filter
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card">
+          <div class="card-header">
+            <i class="bi bi-cart3"></i> Orders (<%= orders.total || 0 %>)
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (orders.data && orders.data.length > 0) { %>
+                    <% orders.data.forEach(order => { %>
+                      <tr>
+                        <td>
+                          <a href="/admin/orders/<%= order._id %>" class="fw-bold">
+                            #<%= order._id.toString().slice(-6).toUpperCase() %>
+                          </a>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <img src="<%= order.user?.userImage || '/admin/images/default-avatar.png' %>" alt="" class="avatar-sm me-2">
+                            <div>
+                              <div><%= order.user?.userNick || 'N/A' %></div>
+                              <small class="text-muted"><%= order.user?.userEmail || '' %></small>
+                            </div>
+                          </div>
+                        </td>
+                        <td><%= order.orderItems?.length || 0 %> items</td>
+                        <td>$<%= order.orderTotal %></td>
+                        <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                        <td>
+                          <select class="form-select form-select-sm status-select"
+                                  data-id="<%= order._id %>"
+                                  data-type="order">
+                            <% statuses.filter(s => s !== 'DELETE').forEach(s => { %>
+                              <option value="<%= s %>" <%= order.orderStatus === s ? 'selected' : '' %>><%= s %></option>
+                            <% }) %>
+                          </select>
+                        </td>
+                        <td>
+                          <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> View
+                          </a>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        No orders found
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <% if (orders.pages > 1) { %>
+            <div class="card-footer">
+              <nav>
+                <ul class="pagination mb-0 justify-content-center">
+                  <% for (let i = 1; i <= orders.pages; i++) { %>
+                    <li class="page-item <%= orders.currentPage === i ? 'active' : '' %>">
+                      <a class="page-link" href="?page=<%= i %>&status=<%= filters.status || '' %>"><%= i %></a>
+                    </li>
+                  <% } %>
+                </ul>
+              </nav>
+            </div>
+          <% } %>
+        </div>
+      </main>
+      <%- include('../partials/footer') %>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/admin/js/admin.js"></script>
+</body>
+</html>

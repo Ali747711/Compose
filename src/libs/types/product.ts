@@ -62,9 +62,9 @@ export interface ProductUpdateInput {
 }
 
 export interface ProductInquiry {
-  order: string;
-  page: number;
-  limit: number;
+  order?: string;
+  page?: number;
+  limit?: number;
   search?: string;
   productCollection?: ProductCollection;
 }

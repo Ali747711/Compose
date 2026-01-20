@@ -45,7 +45,9 @@ class ProductService {
 
   public getAllProducts = async (): Promise<Product[]> => {
     console.log("Product service, [getAllProducts] ----------");
-    const result = await this.productModel.find({});
+    const result = await this.productModel.find({
+      productStatus: ProductStatus.PROCESS,
+    });
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
 
     return result;
@@ -53,7 +55,7 @@ class ProductService {
 
   public getProduct = async (
     userId: ObjectId | null,
-    id: string
+    id: string,
   ): Promise<Product> => {
     const productId = shapeIntoMongooseObjectId(id);
 
@@ -80,7 +82,7 @@ class ProductService {
           .findByIdAndUpdate(
             productId,
             { $inc: { productViews: +1 } },
-            { new: true }
+            { new: true },
           )
           .exec();
       }
