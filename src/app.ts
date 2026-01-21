@@ -32,7 +32,7 @@ const allowedOrigins = [
 // Middlewares
 
 app.use(express.json());
-// 🔍 CORS with detailed logging
+// CORS with detailed logging
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -96,8 +96,10 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
+      // secure: process.env.NODE_ENV === "production" ? true : false,
+      // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   }),
 );
