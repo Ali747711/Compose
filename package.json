@@ -45,7 +45,21 @@
     "multer": "^2.0.2",
     "stream": "^0.0.3",
     "uuid": "^13.0.0",
-    "@types/express-session": "^1.18.2"
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^22.15.30",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
+    "@types/connect-mongodb-session": "^2.4.8",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
+    "@types/uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
