@@ -26,11 +26,11 @@ a {
 }
 
 .admin-page {
-  margin-top: 4rem;
+  align-items: center;
+  margin-top: 1.5rem;
   font-size: 1.5rem;
   cursor: pointer;
   font-weight: bolder;
-  text-align: center;
 }
 
 .admin-page:hover {
