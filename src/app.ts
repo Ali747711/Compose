@@ -67,6 +67,9 @@ app.use(
     exposedHeaders: ["Set-Cookie"], // ✅ Allow frontend to see Set-Cookie header
   }),
 );
+app.use(() => {
+  console.log("Product status: ", process.env.NODE_ENV);
+});
 app.use(urlencoded({ extended: true }));
 app.use(morgan(MORGAN_FOMRAT));
 // app.use(express.static(path.join(__dirname, "public")));
@@ -86,8 +89,6 @@ const sessionStore = new MongoDBSessionStore({
 sessionStore.on("error", (error) => {
   console.log("Session store error:", error);
 });
-
-console.log("Product status: ", process.env.NODE_ENV);
 
 app.use(
   session({
