@@ -19,3 +19,21 @@ body {
   place-content: center;
   padding: 1rem;
 }
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.admin-page {
+  margin-top: 4rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.admin-page:hover {
+  color: #fdd22c;
+  transition: ease-in-out;
+}
