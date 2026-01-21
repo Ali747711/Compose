@@ -87,6 +87,8 @@ sessionStore.on("error", (error) => {
   console.log("Session store error:", error);
 });
 
+console.log("Product status: ", process.env.NODE_ENV);
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
