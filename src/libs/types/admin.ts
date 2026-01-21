@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Session } from "express-session";
+import { Session, SessionData } from "express-session";
 import { SessionUser } from "./user";
 import { Product } from "./product";
 import { Order } from "./order";
@@ -12,14 +12,15 @@ declare module "express-session" {
   }
 }
 
+// AdminRequest properly extends Express Request
 export interface AdminRequest extends Request {
   admin?: SessionUser;
-  session: Session & {
+  session: Session & Partial<SessionData> & {
     user?: SessionUser;
     isAdmin?: boolean;
   };
   file?: Express.Multer.File;
-  files?: Express.Multer.File[];
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
 }
 
 export interface DashboardStats {

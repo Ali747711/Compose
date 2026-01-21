@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2020",
     "module": "commonjs",
+    "lib": ["ES2020"],
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "paths": {}
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "node",
+    "types": ["node", "express", "express-session"],
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

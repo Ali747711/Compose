@@ -47,6 +47,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22.15.30",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.8.1",
     "@types/connect-mongodb-session": "^2.4.8",
@@ -62,6 +63,7 @@
     "@types/multer": "^2.0.0",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

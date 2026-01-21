@@ -1,7 +1,6 @@
 import { Types, ObjectId } from "mongoose";
 import { UserStatus, UserType } from "../enums/user.enum";
 import { Request } from "express";
-import { Session } from "express-session";
 import { Address } from "./address";
 import { Payment } from "./payment";
 import { Order } from "./order";
@@ -70,14 +69,7 @@ export interface UserUpdateInput {
 }
 
 export interface ExtendedRequest extends Request {
-  user: User;
-  file: Express.Multer.File;
-  files: Express.Multer.File[];
-}
-
-export interface AdminRequest extends Request {
-  user: User;
-  session: Session & { user: SessionUser };
-  file: Express.Multer.File;
-  files: Express.Multer.File[];
+  user?: User;
+  file?: Express.Multer.File;
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
 }
