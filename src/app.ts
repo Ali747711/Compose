@@ -81,6 +81,8 @@ app.use(cookieParser());
 app.use(userController.rateLimiter);
 
 // Session configuration for admin panel
+
+app.set("trust proxy", 1);
 const MongoDBSessionStore = MongoDBStore(session);
 const sessionStore = new MongoDBSessionStore({
   uri: process.env.DB_URI as string,
