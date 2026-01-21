@@ -66,7 +66,7 @@
                 <i class="bi bi-currency-dollar text-2xl text-green-600"></i>
               </div>
               <div>
-                <h3 class="text-2xl font-bold text-main-text">$<%= (stats?.totalRevenue || 0).toLocaleString() %></h3>
+                <h3 class="text-2xl font-bold text-main-text"><%= (stats?.totalRevenue || 0).toLocaleString() %>₩</h3>
                 <p class="text-sm text-gray-500">Total Revenue</p>
               </div>
             </div>
@@ -157,7 +157,7 @@
                           </a>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600"><%= order.user?.userNick || 'N/A' %></td>
-                        <td class="px-6 py-4 text-sm font-medium text-main-text">$<%= order.orderTotal %></td>
+                        <td class="px-6 py-4 text-sm font-medium text-main-text"><%= order.orderTotal %>₩</td>
                         <td class="px-6 py-4">
                           <span class="inline-flex px-3 py-1 rounded-full text-xs font-medium
                             <%= order.orderStatus === 'PAUSE' ? 'bg-yellow-50 text-yellow-600 border border-yellow-200' :
@@ -218,7 +218,7 @@
                           </span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600"><%= product.productViews %></td>
-                        <td class="px-6 py-4 text-sm font-medium text-main-text">$<%= product.productPrice %></td>
+                        <td class="px-6 py-4 text-sm font-medium text-main-text"><%= product.productPrice %>₩</td>
                       </tr>
                     <% }) %>
                   <% } else { %>
@@ -252,7 +252,7 @@
         data: {
           labels: revenueData.map(r => r.month),
           datasets: [{
-            label: 'Revenue ($)',
+            label: 'Revenue (₩)',
             data: revenueData.map(r => r.revenue),
             borderColor: '#e3b609',
             backgroundColor: 'rgba(253, 210, 44, 0.1)',
