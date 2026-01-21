@@ -67,8 +67,9 @@ app.use(
     exposedHeaders: ["Set-Cookie"], // ✅ Allow frontend to see Set-Cookie header
   }),
 );
-app.use(() => {
+app.use((req, res, next) => {
   console.log("Product status: ", process.env.NODE_ENV);
+  next();
 });
 app.use(urlencoded({ extended: true }));
 app.use(morgan(MORGAN_FOMRAT));
