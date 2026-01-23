@@ -28,9 +28,13 @@ class SocketServer {
     this.io = new SocketIOServer(httpServer, {
       cors: {
         origin: process.env.ALLOWED_ORIGINS?.split(",") || [
-          "http://localhost:5173",
-          "http://localhost:3000",
           "http://localhost:3003",
+          "https://compose-3wf7.onrender.com",
+          "http://localhost:5173",
+          "http://localhost:5174",
+          "http://localhost:5175",
+          "https://compose-client.vercel.app",
+          "https://compose-client-alis-projects-1ef90113.vercel.app",
         ],
         credentials: true,
       },
@@ -59,7 +63,9 @@ class SocketServer {
           if (adminPayload) {
             socket.adminPayload = adminPayload;
             socket.isAdmin = true;
-            console.log(`Admin socket authenticated: ${adminPayload.adminNick}`);
+            console.log(
+              `Admin socket authenticated: ${adminPayload.adminNick}`,
+            );
             return next();
           }
           return next(new Error("Authentication error: Invalid admin token"));
