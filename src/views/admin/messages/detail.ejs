@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Compose Coffee Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            main: '#fdd22c',
+            'main-dull': '#e3b609',
+            'main-duller': '#ee9b00',
+            'main-text': '#2e2726',
+          },
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <div class="flex min-h-screen">
+    <%- include('../partials/sidebar', { activePage }) %>
+
+    <div class="flex-1 lg:ml-64">
+      <%- include('../partials/header', { user, title }) %>
+
+      <main class="p-6">
+        <!-- Back Button -->
+        <a href="/admin/messages" class="inline-flex items-center gap-2 text-gray-600 hover:text-main-text mb-6 transition-colors">
+          <i class="bi bi-arrow-left"></i>
+          Back to Messages
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Chat Section -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm h-[600px] flex flex-col">
+              <!-- Chat Header -->
+              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <img src="<%= conversation.userId?.userImage || '/admin/images/default-avatar.png' %>"
+                       alt=""
+                       class="w-10 h-10 rounded-full object-cover border-2 border-gray-200">
+                  <div>
+                    <h3 class="font-semibold text-main-text"><%= conversation.userId?.userNick || 'Unknown User' %></h3>
+                    <span class="text-xs <%= conversation.status === 'OPEN' ? 'text-green-600' : 'text-gray-500' %>">
+                      <%= conversation.status %>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <% if (conversation.status === 'OPEN') { %>
+                    <button id="resolveBtn" class="px-4 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+                      <i class="bi bi-check-circle"></i> Mark Resolved
+                    </button>
+                  <% } else { %>
+                    <button id="reopenBtn" class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                      <i class="bi bi-arrow-counterclockwise"></i> Reopen
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+
+              <!-- Messages Container -->
+              <div class="flex-1 overflow-y-auto p-6 space-y-4" id="messagesContainer">
+                <% if (messages && messages.length > 0) { %>
+                  <% messages.forEach(msg => { %>
+                    <div class="flex <%= msg.senderType === 'ADMIN' ? 'justify-end' : 'justify-start' %>">
+                      <div class="max-w-[70%] <%= msg.senderType === 'ADMIN' ? 'bg-main text-main-text' : 'bg-gray-100 text-gray-800' %> rounded-2xl px-4 py-3">
+                        <p class="text-sm"><%= msg.content %></p>
+                        <div class="flex items-center justify-end gap-2 mt-1">
+                          <span class="text-xs opacity-70">
+                            <%= new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+                          </span>
+                          <% if (msg.senderType === 'ADMIN') { %>
+                            <i class="bi <%= msg.status === 'READ' ? 'bi-check2-all text-blue-600' : 'bi-check2' %> text-xs"></i>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <div class="text-center text-gray-400 py-12">
+                    <i class="bi bi-chat-dots text-4xl block mb-2"></i>
+                    <p>No messages yet</p>
+                  </div>
+                <% } %>
+              </div>
+
+              <!-- Message Input -->
+              <div class="px-6 py-4 border-t border-gray-100">
+                <form id="messageForm" class="flex items-center gap-3">
+                  <input type="text"
+                         id="messageInput"
+                         placeholder="Type your reply..."
+                         class="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all"
+                         <%= conversation.status === 'CLOSED' ? 'disabled' : '' %>>
+                  <button type="submit"
+                          class="px-6 py-3 bg-main text-main-text font-bold rounded-xl border-2 border-main-dull hover:bg-main-dull transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          <%= conversation.status === 'CLOSED' ? 'disabled' : '' %>>
+                    <i class="bi bi-send"></i>
+                  </button>
+                </form>
+                <% if (conversation.status === 'CLOSED') { %>
+                  <p class="text-xs text-gray-400 mt-2 text-center">This conversation is closed. Reopen to send messages.</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Info Sidebar -->
+          <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <h3 class="font-semibold text-main-text mb-4 flex items-center gap-2">
+                <i class="bi bi-person-circle text-main-dull"></i>
+                User Information
+              </h3>
+
+              <div class="text-center mb-6">
+                <img src="<%= conversation.userId?.userImage || '/admin/images/default-avatar.png' %>"
+                     alt=""
+                     class="w-20 h-20 rounded-full object-cover border-4 border-main/20 mx-auto mb-3">
+                <h4 class="font-bold text-main-text text-lg"><%= conversation.userId?.userNick || 'Unknown' %></h4>
+              </div>
+
+              <div class="space-y-3">
+                <% if (conversation.userId?.userEmail) { %>
+                  <div class="flex items-center gap-3 text-sm">
+                    <i class="bi bi-envelope text-gray-400"></i>
+                    <span class="text-gray-600"><%= conversation.userId.userEmail %></span>
+                  </div>
+                <% } %>
+                <% if (conversation.userId?.userPhone) { %>
+                  <div class="flex items-center gap-3 text-sm">
+                    <i class="bi bi-telephone text-gray-400"></i>
+                    <span class="text-gray-600"><%= conversation.userId.userPhone %></span>
+                  </div>
+                <% } %>
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="bi bi-calendar text-gray-400"></i>
+                  <span class="text-gray-600">Started: <%= new Date(conversation.createdAt).toLocaleDateString() %></span>
+                </div>
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="bi bi-clock text-gray-400"></i>
+                  <span class="text-gray-600">Last message: <%= conversation.lastMessageAt ? new Date(conversation.lastMessageAt).toLocaleString() : 'N/A' %></span>
+                </div>
+              </div>
+
+              <div class="mt-6 pt-6 border-t border-gray-100">
+                <a href="/admin/users/<%= conversation.userId?._id %>"
+                   class="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                  <i class="bi bi-person"></i>
+                  View Full Profile
+                </a>
+              </div>
+            </div>
+
+            <!-- Conversation Stats -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-6">
+              <h3 class="font-semibold text-main-text mb-4 flex items-center gap-2">
+                <i class="bi bi-bar-chart text-main-dull"></i>
+                Conversation Stats
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                  <p class="text-2xl font-bold text-main-text"><%= messages.length %></p>
+                  <p class="text-xs text-gray-500">Total Messages</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                  <p class="text-2xl font-bold text-main-text"><%= conversation.unreadCount?.user || 0 %></p>
+                  <p class="text-xs text-gray-500">User Unread</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <%- include('../partials/footer') %>
+    </div>
+  </div>
+
+  <script>
+    const conversationId = '<%= conversation._id %>';
+    const adminSocketToken = '<%= adminSocketToken %>';
+
+    // Scroll to bottom of messages
+    const messagesContainer = document.getElementById('messagesContainer');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // ============ Socket.io Setup for Real-time Updates ============
+    let socket = null;
+
+    function initializeSocket() {
+      if (!adminSocketToken) {
+        console.warn('No admin socket token available');
+        return;
+      }
+
+      // Connect to Socket.io with admin token
+      socket = io({
+        auth: {
+          adminToken: adminSocketToken
+        }
+      });
+
+      socket.on('connect', () => {
+        console.log('Admin socket connected:', socket.id);
+
+        // Join this specific conversation room
+        socket.emit('admin:join_conversation', { conversationId });
+
+        // Also join admin dashboard for notifications
+        socket.emit('admin:join');
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error.message);
+      });
+
+      // Listen for new messages from users
+      socket.on('message:new', (message) => {
+        console.log('New message received:', message);
+
+        // Only add user messages to UI (admin messages are added when sent)
+        if (message.senderType === 'USER') {
+          addMessageToUI(message.content, false, message.createdAt);
+        }
+      });
+
+      // Listen for typing indicators
+      socket.on('typing:start', (data) => {
+        showTypingIndicator(data.userNick);
+      });
+
+      socket.on('typing:stop', () => {
+        hideTypingIndicator();
+      });
+
+      // Listen for message read status
+      socket.on('messages:read', (data) => {
+        if (data.readBy === 'USER') {
+          updateMessageReadStatus();
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Admin socket disconnected');
+      });
+    }
+
+    // Initialize socket connection
+    initializeSocket();
+
+    // ============ UI Helper Functions ============
+
+    // Helper to add message to UI
+    function addMessageToUI(content, isAdmin = true, timestamp = null) {
+      const time = timestamp ? new Date(timestamp) : new Date();
+      const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Remove "no messages" placeholder if present
+      const placeholder = messagesContainer.querySelector('.text-center.text-gray-400');
+      if (placeholder) {
+        placeholder.remove();
+      }
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `flex ${isAdmin ? 'justify-end' : 'justify-start'}`;
+      msgDiv.innerHTML = `
+        <div class="max-w-[70%] ${isAdmin ? 'bg-main text-main-text' : 'bg-gray-100 text-gray-800'} rounded-2xl px-4 py-3">
+          <p class="text-sm">${escapeHtml(content)}</p>
+          <div class="flex items-center justify-end gap-2 mt-1">
+            <span class="text-xs opacity-70">${timeStr}</span>
+            ${isAdmin ? '<i class="bi bi-check2 text-xs"></i>' : ''}
+          </div>
+        </div>
+      `;
+      messagesContainer.appendChild(msgDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator(userNick) {
+      let indicator = document.getElementById('typingIndicator');
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'typingIndicator';
+        indicator.className = 'flex justify-start';
+        indicator.innerHTML = `
+          <div class="bg-gray-100 text-gray-500 rounded-2xl px-4 py-2 text-sm italic">
+            ${escapeHtml(userNick || 'User')} is typing...
+          </div>
+        `;
+        messagesContainer.appendChild(indicator);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    // Update read status icons
+    function updateMessageReadStatus() {
+      const checkIcons = messagesContainer.querySelectorAll('.bi-check2:not(.bi-check2-all)');
+      checkIcons.forEach(icon => {
+        icon.classList.remove('bi-check2');
+        icon.classList.add('bi-check2-all', 'text-blue-600');
+      });
+    }
+
+    // ============ Button Handlers ============
+
+    // Handle resolve button
+    const resolveBtn = document.getElementById('resolveBtn');
+    if (resolveBtn) {
+      resolveBtn.addEventListener('click', async () => {
+        if (confirm('Mark this conversation as resolved?')) {
+          try {
+            const res = await fetch(`/admin/messages/${conversationId}/status`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ status: 'CLOSED' })
+            });
+            if (res.ok) {
+              window.location.reload();
+            } else {
+              alert('Failed to resolve conversation');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error resolving conversation');
+          }
+        }
+      });
+    }
+
+    // Handle reopen button
+    const reopenBtn = document.getElementById('reopenBtn');
+    if (reopenBtn) {
+      reopenBtn.addEventListener('click', async () => {
+        if (confirm('Reopen this conversation?')) {
+          try {
+            const res = await fetch(`/admin/messages/${conversationId}/status`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ status: 'OPEN' })
+            });
+            if (res.ok) {
+              window.location.reload();
+            } else {
+              alert('Failed to reopen conversation');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error reopening conversation');
+          }
+        }
+      });
+    }
+
+    // ============ Message Form Handler ============
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+
+    if (messageForm) {
+      messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const content = messageInput.value.trim();
+
+        if (!content) return;
+
+        // Disable input while sending
+        messageInput.disabled = true;
+
+        try {
+          const res = await fetch('/admin/messages/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ conversationId, content })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            // Add message to UI
+            addMessageToUI(content, true);
+            messageInput.value = '';
+          } else {
+            alert('Failed to send message: ' + (data.error || 'Unknown error'));
+          }
+        } catch (err) {
+          console.error('Send message error:', err);
+          alert('Error sending message');
+        } finally {
+          messageInput.disabled = false;
+          messageInput.focus();
+        }
+      });
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    });
+  </script>
+  <script src="/admin/js/admin.js"></script>
+</body>
+</html>

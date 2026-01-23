@@ -81,6 +81,12 @@ adminRouter.post(
   adminController.updateUserStatus,
 );
 
+// Messages
+adminRouter.get("/messages", verifyAdmin, adminController.getMessages);
+adminRouter.get("/messages/:id", verifyAdmin, adminController.getMessageDetail);
+adminRouter.post("/messages/send", verifyAdmin, adminController.sendMessage);
+adminRouter.post("/messages/:id/status", verifyAdmin, adminController.updateConversationStatus);
+
 // API endpoints for AJAX calls
 adminRouter.get("/api/stats", verifyAdmin, adminController.getStats);
 

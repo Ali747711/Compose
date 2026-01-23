@@ -15,6 +15,7 @@ import paymentRouter from "./routes/payment.route";
 import userController from "./controllers/user.controller";
 import healthRouter from "./routes/health.route";
 import adminRouter from "./routes/admin.route";
+import messageRouter from "./routes/message.route";
 
 // PORT and APP declaration
 const app = express();
@@ -122,6 +123,7 @@ app.use("/view", viewRouter);
 app.use("/address", addressRouter);
 app.use("/payment", paymentRouter);
 app.use("/health", healthRouter);
+app.use("/message", messageRouter);
 
 // Admin panel routes (SSR)
 app.use("/admin", adminRouter);

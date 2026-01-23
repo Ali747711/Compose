@@ -10,6 +10,10 @@ import {
   ProductVolume,
 } from "../libs/enums/product.enum";
 import { uploader } from "../libs/utils/uploadToCloudinary";
+import MessageService from "../services/message.service";
+import { ConversationStatus, MessageSenderType } from "../libs/enums/message.enum";
+import { broadcastToConversation, broadcastToAdminDashboard } from "../socket/socket.manager";
+import { generateAdminSocketToken } from "../libs/utils/adminSocketAuth";
 
 const adminService = new AdminService();
 
@@ -466,12 +470,159 @@ adminController.updateUserStatus = async (req: AdminRequest, res: Response) => {
 };
 
 // ============ API ENDPOINTS ============
-adminController.getStats = async (req: AdminRequest, res: Response) => {
+adminController.getStats = async (_req: AdminRequest, res: Response) => {
   try {
     const stats = await adminService.getDashboardStats();
     res.json(stats);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+};
+
+// ============ MESSAGES ============
+adminController.getMessages = async (req: AdminRequest, res: Response) => {
+  try {
+    const { status, page = 1 } = req.query;
+    const messageService = new MessageService();
+
+    const conversations = await messageService.getAllConversations({
+      status: status as ConversationStatus,
+      page: Number(page),
+      limit: 20,
+    });
+
+    const adminUnreadCount = await messageService.getAdminUnreadCount();
+
+    // Generate socket token for real-time updates
+    const adminSocketToken = generateAdminSocketToken(
+      req.session.user!._id,
+      req.session.user!.userNick
+    );
+
+    res.render("admin/messages/index", {
+      title: "Messages",
+      user: req.session.user,
+      conversations,
+      adminUnreadCount,
+      filters: { status },
+      statuses: Object.values(ConversationStatus),
+      activePage: "messages",
+      success: req.query.success,
+      error: req.query.error,
+      adminSocketToken,
+    });
+  } catch (error) {
+    console.log("Admin controller, [getMessages] Error:", error);
+    res.render("admin/messages/index", {
+      title: "Messages",
+      user: req.session.user,
+      conversations: { data: [], total: 0 },
+      adminUnreadCount: 0,
+      filters: {},
+      statuses: Object.values(ConversationStatus),
+      error: "Failed to load messages",
+      activePage: "messages",
+      adminSocketToken: null,
+    });
+  }
+};
+
+adminController.getMessageDetail = async (req: AdminRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const messageService = new MessageService();
+
+    // Cast session user to User type for service compatibility
+    const adminUser = req.session.user as any;
+
+    const conversation = await messageService.getConversation(id, adminUser);
+    const messages = await messageService.getMessages(
+      {
+        conversationId: id as any,
+        page: 1,
+        limit: 100,
+      },
+      adminUser
+    );
+
+    // Mark messages as read when admin opens conversation
+    if ((conversation as any).unreadCount?.admin > 0) {
+      await messageService.markAsRead(id, MessageSenderType.ADMIN);
+
+      // Broadcast update to admin dashboard to refresh unread badges
+      broadcastToAdminDashboard("conversation:updated", {
+        conversationId: id,
+        unreadCount: 0,
+      });
+    }
+
+    // Generate socket token for real-time updates
+    const adminSocketToken = generateAdminSocketToken(
+      req.session.user!._id,
+      req.session.user!.userNick
+    );
+
+    res.render("admin/messages/detail", {
+      title: `Chat with ${(conversation as any).userId?.userNick || "User"}`,
+      user: req.session.user,
+      conversation,
+      messages: messages.data,
+      statuses: Object.values(ConversationStatus),
+      activePage: "messages",
+      adminSocketToken,
+    });
+  } catch (error) {
+    console.log("Admin controller, [getMessageDetail] Error:", error);
+    res.redirect("/admin/messages?error=not_found");
+  }
+};
+
+// Admin sends a message via REST API
+adminController.sendMessage = async (req: AdminRequest, res: Response) => {
+  try {
+    const { conversationId, content } = req.body;
+    const messageService = new MessageService();
+
+    if (!conversationId || !content) {
+      return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
+    const message = await messageService.sendMessage({
+      conversationId: conversationId as any,
+      senderId: req.session.user!._id as any,
+      senderType: "ADMIN" as any,
+      content,
+    });
+
+    // Broadcast message to user via Socket.io for real-time delivery
+    broadcastToConversation(conversationId, "message:new", message);
+
+    res.json({ success: true, message });
+  } catch (error) {
+    console.log("Admin controller, [sendMessage] Error:", error);
+    res.status(500).json({ success: false, error: "Failed to send message" });
+  }
+};
+
+// Admin updates conversation status
+adminController.updateConversationStatus = async (req: AdminRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const messageService = new MessageService();
+
+    const conversation = await messageService.updateConversationStatus(id, status);
+
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ success: true, conversation });
+    }
+    res.redirect(`/admin/messages/${id}`);
+  } catch (error) {
+    console.log("Admin controller, [updateConversationStatus] Error:", error);
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.status(500).json({ success: false, error: "Update failed" });
+    }
+    res.redirect("/admin/messages?error=status_update_failed");
   }
 };
 
