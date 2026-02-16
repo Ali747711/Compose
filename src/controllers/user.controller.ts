@@ -132,6 +132,21 @@ userController.updateUser = async (req: ExtendedRequest, res: Response) => {
   }
 };
 
+userController.getMember = async (req: Request, res: Response) => {
+  try {
+    console.log("User controller, [getMember]--------");
+    const result = await userService.getMember(req.params.id);
+    res.status(HttpCode.OK).json({ success: true, user: result });
+  } catch (error) {
+    console.log("User controller, [getMember] Error: ", error);
+    if (error instanceof Errors) {
+      res.status(error.code).json(error);
+    } else {
+      res.status(Errors.standard.code).json(Errors.standard);
+    }
+  }
+};
+
 userController.getTopUsers = async (req: Request, res: Response) => {
   try {
     console.log("User controller, [getTopUsers]--------");

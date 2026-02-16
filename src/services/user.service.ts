@@ -157,6 +157,18 @@ class UserService {
     return result;
   };
 
+  public getMember = async (id: string): Promise<User> => {
+    const memberId = shapeIntoMongooseObjectId(id);
+    const result = await this.userModel
+      .findOne({
+        _id: memberId,
+        userStatus: UserStatus.ACTIVE,
+      })
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    return result;
+  };
+
   public getTopUsers = async (): Promise<User[]> => {
     const result = await this.userModel
       .find({

@@ -15,6 +15,7 @@ userRouter.post(
   userController.updateUser
 );
 userRouter.get("/top-users", userController.getTopUsers);
+userRouter.get("/member/:id", userController.getMember);
 userRouter.get(
   "/user-details",
   userController.verifyAuth,
