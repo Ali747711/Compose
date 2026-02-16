@@ -69,6 +69,7 @@ userController.login = async (req: Request, res: Response) => {
     res.status(HttpCode.OK).json({ user: result, token });
   } catch (error) {
     console.log("User controller, [login] Error: ", error);
+    console.log(error);
     if (error instanceof Errors) {
       res.status(error.code).json(error);
     } else {
@@ -151,7 +152,7 @@ userController.getTopUsers = async (req: Request, res: Response) => {
 userController.verifyAuth = async (
   req: ExtendedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     console.log("User controller, [verifyAuth]--------");
@@ -174,6 +175,7 @@ userController.verifyAuth = async (
       // console.log("COOKIE: ", req.cookies);
     }
     if (token) req.user = await authService.checkAuth(token);
+
     if (!req.user)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
 
@@ -191,7 +193,7 @@ userController.verifyAuth = async (
 userController.rateLimiter = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { success } = await rateLimit.limit("my-rate-limiter");

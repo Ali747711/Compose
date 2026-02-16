@@ -12,42 +12,42 @@ class AuthService {
     this.duration = `${AUTH_TIMER}h`;
   }
 
-  public createToken = async (payload: User) => {
-    // console.log("Token service, [createToken] -----------");
-    // console.log("Token service, [createToken] ENV string: ", this.secretToken);
-    // console.log("Token service, [createToken] Incoming Payload: ", payload);
-    return new Promise((resolve, reject) => {
-      // i made mistake here, i used reject, resolve in wrong order
-      const duration = `${AUTH_TIMER}h`;
-      jwt.sign(
-        payload,
-        this.secretToken,
-        { expiresIn: duration },
-        (err, token) => {
-          if (err) {
-            reject(
-              new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED)
-            );
-          } else {
-            resolve(token as string);
-          }
-        }
-      );
-    });
-  };
-
-  // public token = async (payload: User) => {
-  //   try {
+  // public createToken = async (payload: User) => {
+  //   // console.log("Token service, [createToken] -----------");
+  //   // console.log("Token service, [createToken] ENV string: ", this.secretToken);
+  //   // console.log("Token service, [createToken] Incoming Payload: ", payload);
+  //   return new Promise((resolve, reject) => {
+  //     // i made mistake here, i used reject, resolve in wrong order
   //     const duration = `${AUTH_TIMER}h`;
-  //     const token = await jwt.sign(payload, this.secretToken, {
-  //       expiresIn: duration,
-  //     });
-  //     return token;
-  //   } catch (error) {
-  //     console.log("Auth service, [token] Error: ", error);
-  //     throw new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED);
-  //   }
+  //     jwt.sign(
+  //       payload,
+  //       this.secretToken,
+  //       { expiresIn: duration },
+  //       (err, token) => {
+  //         if (err) {
+  //           reject(
+  //             new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED)
+  //           );
+  //         } else {
+  //           resolve(token as string);
+  //         }
+  //       }
+  //     );
+  //   });
   // };
+
+  public createToken = async (payload: User) => {
+    try {
+      const duration = `${AUTH_TIMER}h`;
+      const token = await jwt.sign(payload, this.secretToken, {
+        expiresIn: duration,
+      });
+      return token;
+    } catch (error) {
+      console.log("Auth service, [token] Error: ", error);
+      throw new Errors(HttpCode.BAD_REQUEST, Message.TOKEN_CREATION_FAILED);
+    }
+  };
 
   public checkAuth = async (token: string) => {
     const result = (await jwt.verify(token, this.secretToken)) as User;
