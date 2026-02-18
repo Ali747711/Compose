@@ -23,6 +23,7 @@ const app = express();
 // Allow multiple origins
 const allowedOrigins = [
   "http://localhost:3003",
+  "http://localhost:3000",
   "https://compose-3wf7.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
